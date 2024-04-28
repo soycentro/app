@@ -1,7 +1,9 @@
-import React from "react"
-import MapView from "react-native-maps"
-import { StyleSheet, View, Dimensions } from "react-native"
+import React, { useState, useEffect, useRef } from "react"
+import MapView, { Marker } from "react-native-maps"
 import Constants from "expo-constants"
+import { StyleSheet, View, Dimensions } from "react-native"
+import { IconButton, useTheme } from "react-native-paper"
+import * as Location from "expo-location"
 
 import InputAutocomplete from "./InputAutocomplete"
 
@@ -18,14 +20,63 @@ const INITIAL_POSITION = {
 }
 
 export default function Home({ navigation }) {
+  const theme = useTheme()
+  const [location, setLocation] = useState()
+  const [showsUserLocation, setShowsUserLocation] = useState(false)
+  const mapRef = useRef(null)
+
+  useEffect(() => {
+    const getPermissions = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync()
+      if (status !== "granted") {
+        return
+      }
+    }
+    getPermissions()
+    setShowsUserLocation(true)
+  }, [])
+
   return (
     <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={INITIAL_POSITION} />
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        initialRegion={INITIAL_POSITION}
+        showsUserLocation={showsUserLocation}
+        showsMyLocationButton={false}
+        showsCompass={false}
+      />
       <View style={styles.searchContainer}>
         <InputAutocomplete
           label=""
           placeholder="Buscar"
           onPlaceSelected={() => {}}
+        />
+      </View>
+      <View style={styles.buttonsContainer}>
+        <IconButton
+          icon={"map-marker-radius"}
+          size={50}
+          mode="contained-tonal"
+          iconColor={theme.colors.secondary}
+          containerColor={theme.colors.secondaryContainer}
+          onPress={async () => {
+            const newLocation = await Location.getCurrentPositionAsync()
+            setLocation(newLocation)
+            mapRef.current.animateToRegion({
+              latitude: newLocation.coords.latitude,
+              longitude: newLocation.coords.longitude,
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA,
+            })
+          }}
+        />
+        <IconButton
+          icon={"alert-octagon"}
+          size={50}
+          mode="contained"
+          iconColor={theme.colors.error}
+          containerColor={theme.colors.errorContainer}
         />
       </View>
     </View>
@@ -55,5 +106,11 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     top: Constants.statusBarHeight,
+  },
+  buttonsContainer: {
+    position: "absolute",
+    padding: 12,
+    right: 0,
+    bottom: 0,
   },
 })
