@@ -31,7 +31,17 @@ export default function Home({ navigation }) {
       if (status !== "granted") {
         return
       }
+
+      const newLocation = await Location.getCurrentPositionAsync()
+      setLocation(newLocation)
+      mapRef.current.animateToRegion({
+        latitude: newLocation.coords.latitude,
+        longitude: newLocation.coords.longitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      })
     }
+
     getPermissions()
     setShowsUserLocation(true)
   }, [])
