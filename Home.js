@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react"
 import MapView, { Marker } from "react-native-maps"
 import Constants from "expo-constants"
-import { StyleSheet, View, Dimensions } from "react-native"
-import { IconButton, useTheme } from "react-native-paper"
+import { StyleSheet, View, Dimensions, TouchableOpacity } from "react-native"
+import { IconButton, useTheme, Text } from "react-native-paper"
 import * as Location from "expo-location"
 
 import InputAutocomplete from "./InputAutocomplete"
+import PlaceInfo from "./PlaceInfo"
 
 const { width, height } = Dimensions.get("window")
 
@@ -21,8 +22,9 @@ const INITIAL_POSITION = {
 
 export default function Home({ navigation }) {
   const theme = useTheme()
-  const [location, setLocation] = useState()
+  const [location, setLocation] = useState(null)
   const [showsUserLocation, setShowsUserLocation] = useState(false)
+  const [marker, setMarker] = useState(null)
   const mapRef = useRef(null)
 
   useEffect(() => {
@@ -55,7 +57,20 @@ export default function Home({ navigation }) {
         showsUserLocation={showsUserLocation}
         showsMyLocationButton={false}
         showsCompass={false}
-      />
+        onPress={() => {
+          setMarker(null)
+        }}
+        onLongPress={async e => {
+          const latlng = e.nativeEvent.coordinate
+          const address = await mapRef.current.addressForCoordinate(latlng)
+
+          setMarker({ latlng, address })
+        }}
+      >
+        {marker ? <Marker coordinate={marker.latlng} /> : null}
+      </MapView>
+      {marker ? <PlaceInfo address={marker.address} place={null} /> : null}
+
       <View style={styles.searchContainer}>
         <InputAutocomplete
           label=""
@@ -63,7 +78,8 @@ export default function Home({ navigation }) {
           onPlaceSelected={() => {}}
         />
       </View>
-      <View style={styles.buttonsContainer}>
+
+      <View style={{ ...styles.buttonsContainer, bottom: marker ? 180 : 0 }}>
         <IconButton
           icon={"map-marker-radius"}
           size={50}
@@ -71,6 +87,8 @@ export default function Home({ navigation }) {
           iconColor={theme.colors.secondary}
           containerColor={theme.colors.secondaryContainer}
           onPress={async () => {
+            setMarker(null)
+
             const newLocation = await Location.getCurrentPositionAsync()
             setLocation(newLocation)
             mapRef.current.animateToRegion({
@@ -87,6 +105,9 @@ export default function Home({ navigation }) {
           mode="contained"
           iconColor={theme.colors.error}
           containerColor={theme.colors.errorContainer}
+          onPress={() => {
+            setMarker(null)
+          }}
         />
       </View>
     </View>
@@ -121,6 +142,5 @@ const styles = StyleSheet.create({
     position: "absolute",
     padding: 12,
     right: 0,
-    bottom: 0,
   },
 })
