@@ -6,7 +6,7 @@ import { IconButton, useTheme, Text } from "react-native-paper"
 import * as Location from "expo-location"
 
 import InputAutocomplete from "./InputAutocomplete"
-import PlaceInfo from "./PlaceInfo"
+import PlaceDetail from "./PlaceDetail"
 
 const { width, height } = Dimensions.get("window")
 
@@ -69,7 +69,7 @@ export default function Home({ navigation }) {
       >
         {marker ? <Marker coordinate={marker.latlng} /> : null}
       </MapView>
-      {marker ? <PlaceInfo address={marker.address} place={null} /> : null}
+      {marker ? <PlaceDetail address={marker.address} place={null} /> : null}
 
       <View style={styles.searchContainer}>
         <InputAutocomplete
@@ -87,8 +87,6 @@ export default function Home({ navigation }) {
           iconColor={theme.colors.secondary}
           containerColor={theme.colors.secondaryContainer}
           onPress={async () => {
-            setMarker(null)
-
             const newLocation = await Location.getCurrentPositionAsync()
             setLocation(newLocation)
             mapRef.current.animateToRegion({
@@ -105,9 +103,7 @@ export default function Home({ navigation }) {
           mode="contained"
           iconColor={theme.colors.error}
           containerColor={theme.colors.errorContainer}
-          onPress={() => {
-            setMarker(null)
-          }}
+          onPress={() => navigation.navigate("Report", { incidentId: "01" })}
         />
       </View>
     </View>
