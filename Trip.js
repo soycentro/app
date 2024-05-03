@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react"
-import MapView, { Marker } from "react-native-maps"
+import React, { useState, useRef, useEffect } from "react"
+import MapView from "react-native-maps"
 import Constants from "expo-constants"
 import { StyleSheet, View, Dimensions } from "react-native"
 import { IconButton, useTheme } from "react-native-paper"
 import * as Location from "expo-location"
 
-import InputAutocomplete from "./InputAutocomplete"
 import PlaceDetail from "./PlaceDetail"
 
 const { width, height } = Dimensions.get("window")
@@ -20,12 +19,12 @@ const INITIAL_POSITION = {
   longitudeDelta: LONGITUDE_DELTA,
 }
 
-export default function Home({ navigation }) {
+export default function Trip({ route, navigation }) {
   const theme = useTheme()
   const [location, setLocation] = useState(null)
   const [showsUserLocation, setShowsUserLocation] = useState(false)
-  const [marker, setMarker] = useState(null)
   const mapRef = useRef(null)
+  const { address, place, time } = route.params
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -57,31 +56,11 @@ export default function Home({ navigation }) {
         showsUserLocation={showsUserLocation}
         showsMyLocationButton={false}
         showsCompass={false}
-        onPress={() => {
-          setMarker(null)
-        }}
-        onLongPress={async e => {
-          const latlng = e.nativeEvent.coordinate
-          const address = await mapRef.current.addressForCoordinate(latlng)
+      />
 
-          setMarker({ latlng, address })
-        }}
-      >
-        {marker ? <Marker coordinate={marker.latlng} /> : null}
-      </MapView>
-      {marker ? (
-        <PlaceDetail address={marker.address} time={5} place={null} />
-      ) : null}
+      <PlaceDetail address={address} time={time} place={place} trip={true} />
 
-      <View style={styles.searchContainer}>
-        <InputAutocomplete
-          label=""
-          placeholder="Buscar"
-          onPlaceSelected={() => {}}
-        />
-      </View>
-
-      <View style={{ ...styles.buttonsContainer, bottom: marker ? 180 : 0 }}>
+      <View style={styles.buttonsContainer}>
         <IconButton
           icon={"map-marker-radius"}
           size={50}
@@ -140,5 +119,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     padding: 12,
     right: 0,
+    bottom: 130,
   },
 })

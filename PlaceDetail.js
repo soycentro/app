@@ -1,8 +1,42 @@
 import React from "react"
 import { Text, View, StyleSheet } from "react-native"
 import { Button, Icon, IconButton } from "react-native-paper"
+import { useNavigation } from "@react-navigation/native"
 
-export default function PlaceDetail({ address, place = false }) {
+function TripDetail({ address, time, place = false }) {
+  return (
+    <View style={styles.container}>
+      <View style={styles.addressContainer}>
+        {place ? (
+          <View>
+            {/* Falta hacer que funcione con place: issue #14 */}
+            <Text style={styles.primary}>Lugar</Text>
+            <Text style={styles.secondary}>
+              {`${address.thoroughfare} #${address.subThoroughfare}`}
+            </Text>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.primary}>
+              {`${address.thoroughfare} #${address.subThoroughfare}`}
+            </Text>
+            <Text style={styles.secondary}>
+              {`${address.administrativeArea}, ${address.country}`}
+            </Text>
+          </View>
+        )}
+      </View>
+      <View style={styles.timeContainer}>
+        <Icon source="clock-time-five" size={30} />
+        <Text style={styles.secondary}>{time} Minutos</Text>
+      </View>
+    </View>
+  )
+}
+
+function NoTripDetail({ address, time, place = false }) {
+  const navigation = useNavigation()
+
   return (
     <View style={styles.container}>
       <View style={styles.addressContainer}>
@@ -28,12 +62,33 @@ export default function PlaceDetail({ address, place = false }) {
       </View>
       <View style={styles.timeContainer}>
         <Icon source="walk" size={30} />
-        <Text style={styles.secondary}>20-30 Minutos</Text>
+        <Text style={styles.secondary}>{time} Minutos</Text>
       </View>
-      <Button mode="contained" onPress={() => console.log("Pressed")}>
+      <Button
+        mode="contained"
+        onPress={() =>
+          navigation.navigate("RouteList", {
+            origin: address, // MAL!! debe ser getLocation
+            destination: address,
+          })
+        }
+      >
         Ver rutas
       </Button>
     </View>
+  )
+}
+
+export default function PlaceDetail({
+  address,
+  time,
+  place = false,
+  trip = false,
+}) {
+  return trip ? (
+    <TripDetail address={address} time={time} place={place} />
+  ) : (
+    <NoTripDetail address={address} time={time} place={place} />
   )
 }
 
