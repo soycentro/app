@@ -1,5 +1,4 @@
 import mapa from './GrafoProcesado.json' assert { type: 'json' };
-import performance from 'perf_hooks';
 
 let conjuntoNodos = mapa[0];
 let conjuntoVias = mapa[1];
@@ -109,7 +108,7 @@ function A_EstrellaRuta(idNodoInicio, idNodoDestino, factorPeligro) {
                 // Deberia haber hecho esto en ts pero funciona :)
                 if (explorados[idNodoNuevo] == null) {
                     let trayectoNuevo = Array.from(trayectoRecorrido);
-                    explorados[idNodoNuevo] = 1;                    
+                    explorados[idNodoNuevo] = 1;
                     let nodoNuevo = conjuntoNodos[idNodoNuevo];
 
                     // Distancia entre el nodo que estamos trabajando y el nodo nuevo al que nos dirigmos
@@ -125,16 +124,14 @@ function A_EstrellaRuta(idNodoInicio, idNodoDestino, factorPeligro) {
                     frontera.push([nodoNuevo, heuristica, trayectoNuevo])
                 }
             });
-        })
+        });
     }
 }
 
+// La heuristica que usamos es la distancia en el plano simple.
 function HeuristicaDistancia(VertInicio, VertDestino) {
-    // Podemos saltarnos la raiz, dado que solo buscamos la diferencia de longitudes y no la distancia de verdad
-    return Math.pow(VertInicio['lat'] - VertDestino['lat'], 2) + Math.pow(VertInicio['lon'] - VertDestino['lon'], 2);
+    return Math.sqrt(Math.pow(VertInicio['lat'] - VertDestino['lat'], 2) + Math.pow(VertInicio['lon'] - VertDestino['lon'], 2));
 }
-
-let ruta = A_EstrellaRuta(9718796286,  7996465710, 1)
 
 // Recibe un conjunto de coordenadas y retorna la suma de la distancia real entre todas
 // Las coordenadas que recibe y exporta esta funcion son en forma [lat, lon].
@@ -143,7 +140,7 @@ function CalcularLongitudRuta(coordenadas) {
     let i = 0;
 
     while (i < coordenadas.length - 1) {
-        longitud = longitud +(Math.pow(coordenadas[i][0] - coordenadas[i + 1][0], 2) + Math.pow(coordenadas[i][1] - coordenadas[i + 1][1], 2));
+        longitud = longitud + Math.sqrt((Math.pow(coordenadas[i][0] - coordenadas[i + 1][0], 2) + Math.pow(coordenadas[i][1] - coordenadas[i + 1][1], 2)));
         i = i + 1;
     }
 
@@ -180,13 +177,21 @@ function NodeIDCoordenada(coordenada) {
     return idMasCercano;
 }
 
+// Recibe un conjunto de rutas e imprime las coordenadas de esta para que se puedan visualizar de forma facil
+// Usado para debug mientras se termina la integracion a la interfaz de la app
+function PrintCoordenadas(conjuntoRutas) {
+    conjuntoRutas.forEach(ruta => {
+        console.log('Para la ruta con riesgo %s:', ruta[2]);
+        ruta[0].forEach(coord => {
+            console.log('%s, %s', coord[0], coord[1]);
+        });
+    });
+}
+
 // Funcion principal que se expone, retorna un array con la misma cantidad de elementos que conjuntoNivelesRiesgo de forma [[CoordenadasRuta], LongitudRuta].
 // Las coordenadas que recibe y exporta esta funcion son en forma [lat, lon].
 // conjuntoNivelesRiesgo debe ser un array compuesto de numeros reales, por cada numero que tiene el array, se retorna un camino. 
-
-
-export function RetornarRutas(coordenadaInicio, coordenadaFin, conjuntoNivelesRiesgo) {    
-    //let inicio = performance.now();
+export function RetornarRutas(coordenadaInicio, coordenadaFin, conjuntoNivelesRiesgo) {
 
     let idInicio = NodeIDCoordenada(coordenadaInicio);
     let idFin = NodeIDCoordenada(coordenadaFin);
@@ -201,10 +206,8 @@ export function RetornarRutas(coordenadaInicio, coordenadaFin, conjuntoNivelesRi
         conjuntoRutas.push([conjuntoCoords, distanciaRuta, nivelRiesgo]);
     });
 
-    //let fin = performance.now();
-    //console.log(fin - inicio);
     return conjuntoRutas;
 }
-
 // Ejemplo de uso:
-// RetornarRutas([4.6104075, -74.0708565], [4.5966050, -74.0693091], [0, 1, 2]);
+//let ruta1 = RetornarRutas([4.6104075, -74.0708565], [4.5966050, -74.0693091], [0, 1, 2]);
+//PrintCoordenadas(ruta1);
