@@ -1,0 +1,1 @@
+const GOOGLE_API_KEY = "google api places key" # https://console.cloud.google.com/google/maps-apis/credentials?project=soycentro
