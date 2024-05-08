@@ -1,3 +1,4 @@
+import { log } from "console"
 import mapa from "../assets/data/mapGraphProcessed.json" assert { type: "json" }
 import performance from "perf_hooks"
 
@@ -206,25 +207,32 @@ export function getRoutes(
   coordenadaFin,
   conjuntoNivelesRiesgo
 ) {
-  //let inicio = performance.now();
+  return new Promise((resolve, reject) => {
+    try {
+      let idInicio = NodeIDCoordenada(coordenadaInicio)
+      let idFin = NodeIDCoordenada(coordenadaFin)
 
-  let idInicio = NodeIDCoordenada(coordenadaInicio)
-  let idFin = NodeIDCoordenada(coordenadaFin)
+      let conjuntoRutas = []
+      conjuntoNivelesRiesgo.forEach(nivelRiesgo => {
+        let conjuntoIDs = A_EstrellaRuta(idInicio, idFin, nivelRiesgo)
+        let conjuntoCoords = CoordenadasDeID(conjuntoIDs)
+        let distanciaRuta = CalcularLongitudRuta(conjuntoCoords)
 
-  let conjuntoRutas = []
+        conjuntoRutas.push([conjuntoCoords, distanciaRuta, nivelRiesgo])
+      })
 
-  conjuntoNivelesRiesgo.forEach(nivelRiesgo => {
-    let conjuntoIDs = A_EstrellaRuta(idInicio, idFin, nivelRiesgo)
-    let conjuntoCoords = CoordenadasDeID(conjuntoIDs)
-    let distanciaRuta = CalcularLongitudRuta(conjuntoCoords)
-
-    conjuntoRutas.push([conjuntoCoords, distanciaRuta, nivelRiesgo])
+      resolve(conjuntoRutas)
+    } catch (error) {
+      reject(error)
+    }
   })
-
-  //let fin = performance.now();
-  //console.log(fin - inicio);
-  return conjuntoRutas
 }
 
 // Ejemplo de uso:
-// RetornarRutas([4.6104075, -74.0708565], [4.5966050, -74.0693091], [0, 1, 2]);
+// getRoutes([4.6104075, -74.0708565], [4.596605, -74.0693091], [0, 1, 2])
+//   .then(routes => {
+//     console.log(routes)
+//   })
+//   .catch(error => {
+//     console.log(error)
+//   })
