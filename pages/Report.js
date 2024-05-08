@@ -1,9 +1,6 @@
 import React, { useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { useTheme, Text, TextInput, Button } from "react-native-paper"
-import Constants from "expo-constants"
-
-import InputAutocomplete from "./InputAutocomplete"
 
 const incidentsInfo = {
   "01": {

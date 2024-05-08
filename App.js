@@ -3,10 +3,10 @@ import { PaperProvider } from "react-native-paper"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
-import Home from "./Home"
-import Report from "./Report"
-import Trip from "./Trip"
-import RouteList from "./RouteList"
+import Home from "./pages/Home"
+import Report from "./pages/Report"
+import Trip from "./pages/Trip"
+import RouteList from "./pages/RouteList"
 
 const Stack = createNativeStackNavigator()
 

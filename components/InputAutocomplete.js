@@ -1,6 +1,6 @@
 import { Text, StyleSheet } from "react-native"
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
-import { GOOGLE_API_KEY } from "./environment"
+import { GOOGLE_API_KEY } from "../environment"
 navigator.geolocation = require("react-native-geolocation-service")
 
 export default function InputAutocomplete({
