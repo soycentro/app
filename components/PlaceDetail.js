@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native"
 
 function TripDetail({ address, time, place = false }) {
   return (
-    <View style={styles.container}>
+    <View style={styles.tripContainer}>
       <View style={styles.addressContainer}>
         {place ? (
           <View>
@@ -26,15 +26,15 @@ function TripDetail({ address, time, place = false }) {
           </View>
         )}
       </View>
-      <View style={styles.timeContainer}>
+      <View style={{ ...styles.timeContainer, marginLeft: 30 }}>
         <Icon source="clock-time-five" size={30} />
-        <Text style={styles.secondary}>{time} Minutos</Text>
+        <Text style={styles.secondary}>{time} Min</Text>
       </View>
     </View>
   )
 }
 
-function NoTripDetail({ address, time, place = false }) {
+function NoTripDetail({ address, time, origin, destination, place = false }) {
   const navigation = useNavigation()
 
   return (
@@ -68,8 +68,9 @@ function NoTripDetail({ address, time, place = false }) {
         mode="contained"
         onPress={() =>
           navigation.navigate("RouteList", {
-            origin: address, // MAL!! debe ser getLocation
-            destination: address,
+            origin: origin,
+            destination: destination,
+            address: address,
           })
         }
       >
@@ -80,6 +81,8 @@ function NoTripDetail({ address, time, place = false }) {
 }
 
 export default function PlaceDetail({
+  origin,
+  destination,
   address,
   time,
   place = false,
@@ -88,7 +91,13 @@ export default function PlaceDetail({
   return trip ? (
     <TripDetail address={address} time={time} place={place} />
   ) : (
-    <NoTripDetail address={address} time={time} place={place} />
+    <NoTripDetail
+      address={address}
+      origin={origin}
+      destination={destination}
+      time={time}
+      place={place}
+    />
   )
 }
 
@@ -98,6 +107,22 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
     justifyContent: "center",
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 4,
+    bottom: 0,
+    padding: 18,
+  },
+  tripContainer: {
+    position: "absolute",
+    width: "100%",
+    backgroundColor: "white",
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     shadowColor: "black",
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.5,

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react"
-import MapView from "react-native-maps"
+import MapView, { Polyline, Marker } from "react-native-maps"
 import Constants from "expo-constants"
 import { StyleSheet, View, Dimensions } from "react-native"
-import { IconButton, useTheme } from "react-native-paper"
+import { IconButton, useTheme, Text } from "react-native-paper"
 import * as Location from "expo-location"
 
 import PlaceDetail from "../components/PlaceDetail"
+import { getRoutes } from "../services/getRoutes.mjs"
 
 const { width, height } = Dimensions.get("window")
 
@@ -20,13 +21,20 @@ const INITIAL_POSITION = {
 }
 
 export default function Trip({ route, navigation }) {
+  const { origin, destination, address, time, place, danger } = route.params
+
   const theme = useTheme()
   const [location, setLocation] = useState(null)
   const [showsUserLocation, setShowsUserLocation] = useState(false)
+  const [routeCoords, setRouteCoords] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
   const mapRef = useRef(null)
-  const { address, place, time } = route.params
 
   useEffect(() => {
+    setLoading(true)
+
     const getPermissions = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync()
       if (status !== "granted") {
@@ -35,17 +43,46 @@ export default function Trip({ route, navigation }) {
 
       const newLocation = await Location.getCurrentPositionAsync()
       setLocation(newLocation)
-      mapRef.current.animateToRegion({
-        latitude: newLocation.coords.latitude,
-        longitude: newLocation.coords.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      })
+      setShowsUserLocation(true)
     }
 
     getPermissions()
-    setShowsUserLocation(true)
+    console.log(danger)
+    getRoutes(
+      [origin.latitude, origin.longitude],
+      [destination.latitude, destination.longitude],
+      [danger]
+    )
+      .then(route => {
+        setRouteCoords(
+          route[0][0].map(coord => {
+            return { latitude: coord[0], longitude: coord[1] }
+          })
+        )
+        setLoading(false)
+      })
+      .catch(error => {
+        console.log(error)
+        setError(error)
+        setLoading(false)
+      })
   }, [])
+
+  if (loading) {
+    return (
+      <View>
+        <Text>Cargando...</Text>
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View>
+        <Text>Error: {error.toString()}</Text>
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -56,7 +93,15 @@ export default function Trip({ route, navigation }) {
         showsUserLocation={showsUserLocation}
         showsMyLocationButton={false}
         showsCompass={false}
-      />
+      >
+        <Marker coordinate={destination} />
+        <Polyline
+          coordinates={routeCoords}
+          strokeWidth={3}
+          strokeColor="#ff4d00"
+          lineCap="butt"
+        />
+      </MapView>
 
       <PlaceDetail address={address} time={time} place={place} trip={true} />
 
