@@ -137,12 +137,9 @@ function A_EstrellaRuta(idNodoInicio, idNodoDestino, factorPeligro) {
   }
 }
 
+// La heuristica que usamos es la distancia en el plano simple.
 function HeuristicaDistancia(VertInicio, VertDestino) {
-  // Podemos saltarnos la raiz, dado que solo buscamos la diferencia de longitudes y no la distancia de verdad
-  return (
-    Math.pow(VertInicio["lat"] - VertDestino["lat"], 2) +
-    Math.pow(VertInicio["lon"] - VertDestino["lon"], 2)
-  )
+  return Math.sqrt(Math.pow(VertInicio['lat'] - VertDestino['lat'], 2) + Math.pow(VertInicio['lon'] - VertDestino['lon'], 2));
 }
 
 let ruta = A_EstrellaRuta(9718796286, 7996465710, 1)
@@ -150,18 +147,15 @@ let ruta = A_EstrellaRuta(9718796286, 7996465710, 1)
 // Recibe un conjunto de coordenadas y retorna la suma de la distancia real entre todas
 // Las coordenadas que recibe y exporta esta funcion son en forma [lat, lon].
 function CalcularLongitudRuta(coordenadas) {
-  let longitud = 0
-  let i = 0
+    let longitud = 0;
+    let i = 0;
 
-  while (i < coordenadas.length - 1) {
-    longitud =
-      longitud +
-      (Math.pow(coordenadas[i][0] - coordenadas[i + 1][0], 2) +
-        Math.pow(coordenadas[i][1] - coordenadas[i + 1][1], 2))
-    i = i + 1
-  }
+    while (i < coordenadas.length - 1) {
+        longitud = longitud + Math.sqrt((Math.pow(coordenadas[i][0] - coordenadas[i + 1][0], 2) + Math.pow(coordenadas[i][1] - coordenadas[i + 1][1], 2)));
+        i = i + 1;
+    }
 
-  return longitud
+    return longitud;
 }
 
 // Recibe un conjunto de IDs y retorna un conjunto de coordenadas a partir de estos
@@ -194,6 +188,18 @@ function NodeIDCoordenada(coordenada) {
     }
   })
   return idMasCercano
+}
+
+
+// Recibe un conjunto de rutas e imprime las coordenadas de esta para que se puedan visualizar de forma facil
+// Usado para debug mientras se termina la integracion a la interfaz de la app
+function PrintCoordenadas(conjuntoRutas) {
+    conjuntoRutas.forEach(ruta => {
+        console.log('Para la ruta con riesgo %s:', ruta[2]);
+        ruta[0].forEach(coord => {
+            console.log('%s, %s', coord[0], coord[1]);
+        });
+    });
 }
 
 // Funcion principal que se expone, retorna un array con la misma cantidad de elementos que conjuntoNivelesRiesgo de forma [[CoordenadasRuta], LongitudRuta].
