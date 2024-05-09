@@ -32,7 +32,7 @@ export default function RouteList({ route, navigation }) {
     navigation.navigate("Trip", {
       origin: origin,
       destination: destination,
-      address: address, // address debe ser string, destination es latlong issue #30
+      address: address,
       time: time,
       place: null, // ver como obtener place apartir de address
       danger: danger,
