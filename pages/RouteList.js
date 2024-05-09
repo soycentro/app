@@ -7,7 +7,7 @@ function Route({ danger, time, navigate }) {
     <TouchableOpacity
       style={styles.item}
       onPress={() => {
-        navigate(time)
+        navigate(time, danger)
       }}
     >
       <View style={styles.horizontal}>
@@ -26,22 +26,25 @@ function Route({ danger, time, navigate }) {
 export default function RouteList({ route, navigation }) {
   const theme = useTheme()
   const [routes, setRoutes] = useState([])
-  const { origin, destination } = route.params
+  const { origin, destination, address } = route.params
 
-  const navigateToTrip = time => {
+  const navigateToTrip = (time, danger) => {
     navigation.navigate("Trip", {
-      address: destination, // address debe ser string, destination es latlong issue #30
+      origin: origin,
+      destination: destination,
+      address: address, // address debe ser string, destination es latlong issue #30
       time: time,
       place: null, // ver como obtener place apartir de address
+      danger: danger,
     })
   }
 
   useEffect(() => {
     // const routes = getRoutes(origin, destination) // issue #26
     setRoutes([
-      { danger: 3, time: 12 },
-      { danger: 2, time: 22 },
-      { danger: 1, time: 17 },
+      { danger: 2, time: 12 },
+      { danger: 1, time: 22 },
+      { danger: 0, time: 17 },
     ])
   }, [])
 

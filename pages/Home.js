@@ -36,6 +36,7 @@ export default function Home({ navigation }) {
 
       const newLocation = await Location.getCurrentPositionAsync()
       setLocation(newLocation)
+      setShowsUserLocation(true)
       mapRef.current.animateToRegion({
         latitude: newLocation.coords.latitude,
         longitude: newLocation.coords.longitude,
@@ -45,7 +46,6 @@ export default function Home({ navigation }) {
     }
 
     getPermissions()
-    setShowsUserLocation(true)
   }, [])
 
   return (
@@ -70,7 +70,13 @@ export default function Home({ navigation }) {
         {marker ? <Marker coordinate={marker.latlng} /> : null}
       </MapView>
       {marker ? (
-        <PlaceDetail address={marker.address} time={5} place={null} />
+        <PlaceDetail
+          origin={location.coords}
+          destination={marker.latlng}
+          address={marker.address}
+          time={5}
+          place={null}
+        />
       ) : null}
 
       <View style={styles.searchContainer}>
