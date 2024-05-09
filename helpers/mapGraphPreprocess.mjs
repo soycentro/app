@@ -1,4 +1,4 @@
-import mapa from "../assets/data/mapGraphUnprocessed.json" assert { type: "json" }
+import mapa from "../assets/data/mapGraphUnprocessed.json" with { type: "json" }
 
 // Los datos se consiguen de https://overpass-turbo.eu/
 // [out:json]; (way({{bbox}})[highway]; ); (._;>;); out;

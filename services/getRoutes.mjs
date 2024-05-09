@@ -1,6 +1,4 @@
-import { log } from "console"
-import mapa from "../assets/data/mapGraphProcessed.json" assert { type: "json" }
-import performance from "perf_hooks"
+import mapa from "../assets/data/mapGraphProcessed.json" with { type: "json" }
 
 let conjuntoNodos = mapa[0]
 let conjuntoVias = mapa[1]
