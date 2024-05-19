@@ -102,9 +102,8 @@ function A_EstrellaRuta(idNodoInicio, idNodoDestino, factorPeligro) {
       return trayectoRecorrido
     }
 
-    // Examinamos todas los nodos que emergen de las rutas que estan conectadas a este nodo, puede parecer ineficiente
-    // Pero dada la naturaleza de A*, como tenemos una lista de nodos explorados, si llegamos a un nodo esto implica que
-    // Esta era la forma mas rapida de llegar aqui, tal que no lo tenemos que explorar de nuevo
+    explorados[idNodoDestino] = null; // esto lo arregla :)
+
     nodo["rutas"].forEach(idRutaConectadaANodo => {
       let nivelPeligroRuta = conjuntoVias[idRutaConectadaANodo]["nivelPeligro"]
 
