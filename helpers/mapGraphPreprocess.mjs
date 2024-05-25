@@ -7,6 +7,7 @@ let nodosMapa = {}
 let rutasMapa = {}
 let conjuntoPuntos = []
 
+
 mapa["elements"].forEach(elementoMapa => {
   if (elementoMapa["type"] == "node") {
     elementoMapa["rutas"] = []

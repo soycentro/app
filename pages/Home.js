@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from "react"
-import MapView, { Marker } from "react-native-maps"
 import Constants from "expo-constants"
+import React, { useState, useEffect, useRef } from "react"
+import MapView, { Marker, Heatmap } from "react-native-maps"
 import { StyleSheet, View, Dimensions } from "react-native"
 import { IconButton, useTheme } from "react-native-paper"
 import * as Location from "expo-location"
+
+import { getHeatmapPoints } from "../services/getHeatmapPoints.mjs"
 
 import InputAutocomplete from "../components/InputAutocomplete"
 import PlaceDetail from "../components/PlaceDetail"
@@ -25,6 +27,9 @@ export default function Home({ navigation }) {
   const [location, setLocation] = useState(null)
   const [showsUserLocation, setShowsUserLocation] = useState(false)
   const [marker, setMarker] = useState(null)
+  const [safePoints, setSafePoints] = useState([])
+  const [dangerousPoints, setDangerousPoints] = useState([])
+
   const mapRef = useRef(null)
 
   useEffect(() => {
@@ -46,6 +51,9 @@ export default function Home({ navigation }) {
     }
 
     getPermissions()
+    const [safePoints, dangerousPoints] = getHeatmapPoints()
+    setSafePoints(safePoints)
+    setDangerousPoints(dangerousPoints)
   }, [])
 
   return (
@@ -67,9 +75,24 @@ export default function Home({ navigation }) {
           setMarker({ latlng, address })
         }}
       >
-        {marker ? <Marker coordinate={marker.latlng} /> : null}
+        {marker && <Marker coordinate={marker.latlng} />}
+
+        <Heatmap
+          points={dangerousPoints}
+          opacity={0.6}
+          radius={30}
+          gradient={{ colors: ["yellow", "red"], startPoints: [0.2, 1] }}
+        />
+
+        <Heatmap
+          points={safePoints}
+          opacity={0.7}
+          radius={30}
+          gradient={{ colors: ["deepskyblue", "blue"], startPoints: [0.2, 1] }}
+        />
       </MapView>
-      {marker ? (
+
+      {marker && (
         <PlaceDetail
           origin={location.coords}
           destination={marker.latlng}
@@ -77,7 +100,7 @@ export default function Home({ navigation }) {
           time={5}
           place={null}
         />
-      ) : null}
+      )}
 
       <View style={styles.searchContainer}>
         <InputAutocomplete
