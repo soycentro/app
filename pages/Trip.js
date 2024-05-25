@@ -47,7 +47,6 @@ export default function Trip({ route, navigation }) {
     }
 
     getPermissions()
-    console.log(danger)
     getRoutes(
       [origin.latitude, origin.longitude],
       [destination.latitude, destination.longitude],

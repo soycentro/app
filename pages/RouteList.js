@@ -17,7 +17,7 @@ function Route({ danger, time, navigate }) {
 
       <View style={styles.horizontal}>
         <Icon source="alert-octagon" size={30} />
-        <Text>Calificacion de peligrosidad: {danger}</Text>
+        <Text>Calificacion de seguridad: {danger}</Text>
       </View>
     </TouchableOpacity>
   )
@@ -42,9 +42,9 @@ export default function RouteList({ route, navigation }) {
   useEffect(() => {
     // const routes = getRoutes(origin, destination) // issue #26
     setRoutes([
-      { danger: 2, time: 12 },
-      { danger: 1, time: 22 },
-      { danger: 0, time: 17 },
+      { danger: 2, time: 0 },
+      { danger: 1, time: 0 },
+      { danger: 0, time: 0 },
     ])
   }, [])
 
