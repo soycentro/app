@@ -13,7 +13,7 @@ function transformWeight(weight) {
 // De todos los nodos asociados a una calle, aproxima y devuelve nodos 
 // distribuidos uniformemente
 // points: Array<{lat, long}>
-const POINT_DISTANCE = .00035
+const POINT_DISTANCE = .00032
 function getPointsUniform(points) {
   const x = points.map(el => el.long)
   const y = points.map(el => el.lat)

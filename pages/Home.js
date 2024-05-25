@@ -80,14 +80,14 @@ export default function Home({ navigation }) {
         <Heatmap
           points={dangerousPoints}
           opacity={0.6}
-          radius={30}
+          radius={20}
           gradient={{ colors: ["yellow", "red"], startPoints: [0.2, 1] }}
         />
 
         <Heatmap
           points={safePoints}
           opacity={0.7}
-          radius={30}
+          radius={20}
           gradient={{ colors: ["deepskyblue", "blue"], startPoints: [0.2, 1] }}
         />
       </MapView>
